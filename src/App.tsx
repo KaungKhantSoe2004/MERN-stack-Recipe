@@ -35,7 +35,10 @@ function App() {
   ): Promise<void> => {
     const response = await axios.post(
       `http://localhost:3000/blog/addRecipe`,
-      newRecipe
+      newRecipe,
+      {
+        withCredentials: true,
+      }
     );
     console.log("Added new Recipe", response);
     setMockRecipes((prev) => [...prev, response.data.data]);
@@ -43,7 +46,10 @@ function App() {
   };
   const deleteRecipe = async (id: number): Promise<void> => {
     const response = await axios.delete(
-      `http://localhost:3000/blog/deleteRecipe/${id}`
+      `http://localhost:3000/blog/deleteRecipe/${id}`,
+      {
+        withCredentials: true,
+      }
     );
 
     if (response.status == 200) {
@@ -62,13 +68,10 @@ function App() {
     }
     const response = await axios.patch(
       `http://localhost:3000/blog/updateRecipe/${id}`,
-      updatableRecipe
-      //   {
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // }
+      updatableRecipe,
+      {
+        withCredentials: true,
+      }
     );
     console.log(response.data);
   };
@@ -88,6 +91,7 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
       console.log(response);
@@ -105,6 +109,7 @@ function App() {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
       console.log(response.status);
@@ -129,18 +134,27 @@ function App() {
     setModalOpen(!isOpen);
   };
   const fetchData = async (): Promise<void> => {
-    const response = await axios.get(`http://localhost:3000/blog/getRecipe`);
+    const response = await axios.get(`http://localhost:3000/blog/getRecipe`, {
+      withCredentials: true,
+    });
     console.log(response.data.data);
     setMockRecipes(response.data.data);
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   return (
     <ModalContext.Provider value={{ isOpen, toggleModal }}>
       <AuthContext.Provider value={{ register, login, User, logout }}>
         <RecipeContext.Provider
-          value={{ mockRecipes, addRecipe, deleteRecipe, updateRecipe }}
+          value={{
+            mockRecipes,
+            addRecipe,
+            deleteRecipe,
+            updateRecipe,
+            fetchData,
+          }}
         >
           <BrowserRouter>
             <Routes>

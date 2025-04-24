@@ -2,21 +2,31 @@ import { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import ModalContext from "../context/modalCondition";
 import { FaSignOutAlt, FaSignInAlt, FaUser } from "react-icons/fa";
+import axios from "axios";
 
 const NavHeader = () => {
   const { toggleModal } = useContext(ModalContext);
   const navigate = useNavigate();
 
   // Replace this with your actual auth context/state
-  const isAuthenticated = false; // Example - use your real auth state
+  const isAuthenticated = true; // Example - use your real auth state
 
-  const handleAuthAction = () => {
-    if (isAuthenticated) {
-      // Perform logout logic
-      console.log("Logging out...");
-      // navigate("/login"); // Redirect if needed
-    } else {
-      navigate("/login"); // Redirect to login page
+  const handleAuthAction = async () => {
+    try {
+      if (isAuthenticated) {
+        // Perform logout logic
+        console.log("Logging out...");
+        // navigate("/login"); // Redirect if needed
+        const response = await axios.get("http://localhost:3000/user/logout", {
+          withCredentials: true,
+        });
+        console.log(response.data);
+        navigate("/login");
+      } else {
+        navigate("/login"); // Redirect to login page
+      }
+    } catch (e) {
+      console.log(e);
     }
   };
 

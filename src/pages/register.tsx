@@ -1,6 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/users"; // Assuming you have an auth context
+import axios from "axios";
 
 interface FormData {
   name: string;
@@ -90,7 +91,23 @@ const RegisterPage = () => {
       setIsLoading(false);
     }
   };
-
+  const checkAuth = async (): Promise<void> => {
+    try {
+      const response = await axios.get("http://localhost:3000/user/me", {
+        withCredentials: true,
+      });
+      if (response.status == 200) {
+        navigate(-1);
+      } else {
+        return;
+      }
+    } catch (e) {
+      return;
+    }
+  };
+  useEffect(() => {
+    checkAuth();
+  }, []);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
