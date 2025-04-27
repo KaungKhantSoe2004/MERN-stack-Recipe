@@ -23,8 +23,7 @@ const ContactPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your form submission logic here
-    console.log("Form submitted:", formData);
+
     alert("Thank you for your message!");
     setFormData({ name: "", email: "", message: "" });
   };

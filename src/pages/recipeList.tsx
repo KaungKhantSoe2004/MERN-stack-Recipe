@@ -4,7 +4,7 @@ import { useState } from "react";
 import RecipeCard from "./recipeCard";
 
 interface RecipeType {
-  id: number;
+  _id: number;
   title: string;
   description: string;
   tags: string[];
@@ -41,7 +41,7 @@ export default function RecipeList({ recipes }: RecipeListProps) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredRecipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
+            <RecipeCard key={recipe._id} recipe={recipe} />
           ))}
         </div>
       )}

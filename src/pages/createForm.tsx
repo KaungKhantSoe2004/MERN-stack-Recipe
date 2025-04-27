@@ -20,7 +20,11 @@ interface RecipeFormData {
 export default function AddRecipeModal() {
   const { toggleModal } = useContext(ModalContext);
   const { addRecipe } = useContext(RecipeContext);
-  const navigate = useNavigate();
+  const [isIngredientError, setIsIngredientError] = useState(false);
+  const [isInstructionError, setIsInstructionError] = useState(false);
+  const [isTagError, setIsTagError] = useState(false);
+  const [isCoverError, setIsCoverError] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<RecipeFormData>({
     title: "",
@@ -57,30 +61,6 @@ export default function AddRecipeModal() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // const handleTagAdd = () => {
-  //   if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       tags: [...prev.tags, currentTag.trim()],
-  //     }));
-  //     setCurrentTag("");
-  //   }
-  // };
-
-  // const handleTagKeyDown = (e: React.KeyboardEvent) => {
-  //   if (e.key === "Enter") {
-  //     e.preventDefault();
-  //     handleTagAdd();
-  //   }
-  // };
-
-  const handleTagRemove = (tagToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    }));
-  };
-
   const handleArrayFieldChange = (
     field: "ingredients" | "instructions",
     index: number,
@@ -113,12 +93,36 @@ export default function AddRecipeModal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log(formData);
+    setIsTagError(false);
+    setIsIngredientError(false);
+    setIsInstructionError(false);
+    setIsCoverError(false);
+
     // return;
     try {
       // Create FormData for file upload
       const formDataToSend = new FormData();
-      console.log(formData.tags, "is formData new title");
+      if (formData.previewImage == "") {
+        setIsCoverError(true);
+        return;
+      }
+      if (formData.tags == "") {
+        setIsTagError(true);
+        return;
+      }
+      if (formData.ingredients) {
+        if (formData.ingredients.length == 1) {
+          setIsIngredientError(true);
+          return;
+        }
+      }
+      if (formData.instructions) {
+        if (formData.instructions.length == 1) {
+          setIsInstructionError(true);
+          return;
+        }
+      }
+
       // return;
       formDataToSend.append("title", formData.title);
       formDataToSend.append("description", formData.description);
@@ -126,6 +130,7 @@ export default function AddRecipeModal() {
       formData.ingredients.forEach((ing) =>
         formDataToSend.append("ingredients", ing)
       );
+      formDataToSend.append("tags", formData.tags);
       formData.instructions.forEach((inst) =>
         formDataToSend.append("instructions", inst)
       );
@@ -250,6 +255,9 @@ export default function AddRecipeModal() {
               <p className="text-xs text-gray-500 mt-1">
                 Recommended: JPEG/PNG, 800x600px, max 2MB
               </p>
+              {isCoverError && (
+                <small className=" text-red-700">Cover photo is required</small>
+              )}
             </div>
           </div>
 
@@ -269,57 +277,6 @@ export default function AddRecipeModal() {
             />
           </div>
 
-          {/* Time and Servings */}
-          {/* <div className="grid md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <label htmlFor="prepTime" className="block font-medium">
-                Prep Time *
-              </label>
-              <input
-                type="text"
-                id="prepTime"
-                name="prepTime"
-                value={formData.prepTime}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., 15 mins"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="cookTime" className="block font-medium">
-                Cook Time *
-              </label>
-              <input
-                type="text"
-                id="cookTime"
-                name="cookTime"
-                value={formData.cookTime}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., 30 mins"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="servings" className="block font-medium">
-                Servings *
-              </label>
-              <input
-                type="text"
-                id="servings"
-                name="servings"
-                value={formData.servings}
-                onChange={handleChange}
-                required
-                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., 4"
-              />
-            </div>
-          </div> */}
-
           {/* Tags */}
           <div className="space-y-2">
             <label htmlFor="tags" className="block font-medium">
@@ -328,39 +285,20 @@ export default function AddRecipeModal() {
             <div className="flex gap-2">
               <input
                 type="text"
+                name="tags"
                 id="tags"
-                value={currentTag}
-                onChange={(e) => setCurrentTag(e.target.value)}
-                // onKeyDown={handleTagKeyDown}
+                value={formData.tags}
+                onChange={handleChange}
                 className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Add a tag (e.g., vegetarian)"
               />
-              {/* <button
-                type="button"
-                onClick={handleTagAdd}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-              >
-                Add
-              </button> */}
             </div>
-            {/* <div className="flex flex-wrap gap-2 mt-2">
-              {formData.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => handleTagRemove(tag)}
-                    className="ml-2 text-gray-500 hover:text-gray-700"
-                    aria-label={`Remove tag ${tag}`}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-            </div> */}
+
+            {isTagError && (
+              <small className=" text-red-600">
+                Tag is required <br />
+              </small>
+            )}
           </div>
 
           {/* Ingredients */}
@@ -431,6 +369,11 @@ export default function AddRecipeModal() {
                 Add Ingredient
               </button>
             </div>
+            {isIngredientError && (
+              <small className=" text-red-800">
+                Your Ingredients must be atleast 2 ingredients
+              </small>
+            )}
           </div>
 
           {/* Instructions */}
@@ -507,6 +450,11 @@ export default function AddRecipeModal() {
                 Add Step
               </button>
             </div>
+            {isInstructionError && (
+              <small className=" text-red-800">
+                Your Instructions must be atleast 2
+              </small>
+            )}
           </div>
 
           {/* Form Actions */}

@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import RecipeEditForm from "./editForm";
 import RecipeContext from "../context/mockRecipes";
+import ModalContext from "../context/modalCondition";
 
 export default function RecipeDetail() {
   const { mockRecipes, deleteRecipe } = useContext(RecipeContext);
@@ -11,9 +12,8 @@ export default function RecipeDetail() {
   const navigate = useNavigate();
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
-  const [isEditForm, setIsEditForm] = useState(false);
-  // const recipeId = id ? parseInt(id, 10) : NaN;
-  // console.log(recipeId, "is Recipe Id");
+  const { toggleEditModal, isEditModalOpen } = useContext(ModalContext);
+
   const recipe = mockRecipes.find((r) => r._id === id);
 
   if (!recipe) {
@@ -59,7 +59,7 @@ export default function RecipeDetail() {
         <div className="flex space-x-2">
           <button
             onClick={() => {
-              setIsEditForm(!isEditForm);
+              toggleEditModal();
             }}
             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
           >
@@ -155,7 +155,7 @@ export default function RecipeDetail() {
         </div>
       )}
 
-      {isEditForm == true && <RecipeEditForm recipe={recipe} />}
+      {isEditModalOpen == true && <RecipeEditForm recipe={recipe} />}
     </div>
   );
 }

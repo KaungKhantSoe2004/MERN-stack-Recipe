@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 
 interface RecipeType {
-  id: number;
+  _id: number;
   title: string;
   description: string;
   tags: string[];

@@ -1,305 +1,8 @@
-// "use client";
-
-// import { useState, useEffect, useContext } from "react";
-// import { useNavigate, useParams } from "react-router-dom";
-// import RecipeContext from "../context/mockRecipes";
-
-// interface RecipeFormData {
-//   id: number;
-//   title: string;
-//   description: string;
-//   tags: string[];
-//   coverImage?: string;
-// }
-
-// export default function RecipeEditForm({ recipe }) {
-//   const { mockRecipes } = useContext(RecipeContext);
-
-//   const navigate = useNavigate();
-//   const [formData, setFormData] = useState<RecipeFormData>({
-//     id: 0,
-//     title: "",
-//     description: "",
-//     prepTime: "",
-//     cookTime: "",
-//     servings: "",
-//     tags: [],
-//   });
-//   const [currentTag, setCurrentTag] = useState("");
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-
-//   // Load recipe data when component mounts
-//   useEffect(() => {
-//     if (recipe) {
-//       setFormData({
-//         id: recipe._id,
-//         title: recipe.title,
-//         description: recipe.description,
-//         prepTime: recipe.prepTime,
-//         cookTime: recipe.cookTime,
-//         servings: recipe.servings?.toString() || "",
-//         tags: recipe.tags,
-//         coverImage: recipe.coverImage,
-//       });
-//     }
-//   }, []);
-
-//   const handleChange = (
-//     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-//   ) => {
-//     const { name, value } = e.target;
-//     setFormData((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleTagAdd = () => {
-//     if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
-//       setFormData((prev) => ({
-//         ...prev,
-//         tags: [...prev.tags, currentTag.trim()],
-//       }));
-//       setCurrentTag("");
-//     }
-//   };
-
-//   const handleTagRemove = (tagToRemove: string) => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       tags: prev.tags.filter((tag) => tag !== tagToRemove),
-//     }));
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);
-
-//     try {
-//       // Simulate API call
-//       await new Promise((resolve) => setTimeout(resolve, 1000));
-
-//       // In a real app, you would:
-//       // await api.updateRecipe(formData);
-//       navigate(`/recipes/${formData.id}`);
-//     } catch (error) {
-//       console.error("Error updating recipe:", error);
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   if (!formData.id) {
-//     return (
-//       <div className="container mx-auto px-4 py-16 text-center">
-//         <h2 className="text-2xl font-bold">Loading recipe...</h2>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="container mx-auto px-4 py-8">
-//       <h1 className="text-3xl font-bold mb-6">Edit Recipe</h1>
-
-//       <form onSubmit={handleSubmit} className="space-y-6">
-//         {/* Basic Information */}
-//         <div className="grid md:grid-cols-2 gap-6">
-//           <div className="space-y-2">
-//             <label htmlFor="title" className="block font-medium">
-//               Recipe Title *
-//             </label>
-//             <input
-//               type="text"
-//               id="title"
-//               name="title"
-//               value={formData.title}
-//               onChange={handleChange}
-//               required
-//               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-//             />
-//           </div>
-
-//           <div className="space-y-2">
-//             <label htmlFor="coverImage" className="block font-medium">
-//               Cover Image URL
-//             </label>
-//             <input
-//               type="url"
-//               id="coverImage"
-//               name="coverImage"
-//               value={formData.coverImage || ""}
-//               onChange={handleChange}
-//               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-//             />
-//           </div>
-//         </div>
-
-//         <div className="space-y-2">
-//           <label htmlFor="description" className="block font-medium">
-//             Description *
-//           </label>
-//           <textarea
-//             id="description"
-//             name="description"
-//             value={formData.description}
-//             onChange={handleChange}
-//             required
-//             rows={4}
-//             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-//           />
-//         </div>
-
-//         {/* Time and Servings */}
-//         <div className="grid md:grid-cols-3 gap-4">
-//           <div className="space-y-2">
-//             <label htmlFor="prepTime" className="block font-medium">
-//               Prep Time *
-//             </label>
-//             <input
-//               type="text"
-//               id="prepTime"
-//               name="prepTime"
-//               value={formData.prepTime}
-//               onChange={handleChange}
-//               required
-//               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-//             />
-//           </div>
-
-//           <div className="space-y-2">
-//             <label htmlFor="cookTime" className="block font-medium">
-//               Cook Time *
-//             </label>
-//             <input
-//               type="text"
-//               id="cookTime"
-//               name="cookTime"
-//               value={formData.cookTime}
-//               onChange={handleChange}
-//               required
-//               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-//             />
-//           </div>
-
-//           <div className="space-y-2">
-//             <label htmlFor="servings" className="block font-medium">
-//               Servings *
-//             </label>
-//             <input
-//               type="text"
-//               id="servings"
-//               name="servings"
-//               value={formData.servings}
-//               onChange={handleChange}
-//               required
-//               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-//             />
-//           </div>
-//         </div>
-
-//         {/* Tags */}
-//         <div className="space-y-2">
-//           <label htmlFor="tags" className="block font-medium">
-//             Tags
-//           </label>
-//           <div className="flex gap-2">
-//             <input
-//               type="text"
-//               id="tags"
-//               value={currentTag}
-//               onChange={(e) => setCurrentTag(e.target.value)}
-//               onKeyDown={(e) =>
-//                 e.key === "Enter" && (e.preventDefault(), handleTagAdd())
-//               }
-//               className="flex-1 p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-//               placeholder="Add a tag (e.g., vegetarian)"
-//             />
-//             <button
-//               type="button"
-//               onClick={handleTagAdd}
-//               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-//             >
-//               Add
-//             </button>
-//           </div>
-//           <div className="flex flex-wrap gap-2 mt-2">
-//             {/* {formData.tags.map((tag) => (
-//               <span
-//                 key={tag}
-//                 className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm"
-//               >
-//                 {tag}
-//                 <button
-//                   type="button"
-//                   onClick={() => handleTagRemove(tag)}
-//                   className="ml-2 text-gray-500 hover:text-gray-700"
-//                 >
-//                   ×
-//                 </button>
-//               </span>
-//             ))} */}
-//             <span className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
-//               {formData.tags}
-//               <button
-//                 type="button"
-//                 onClick={() => handleTagRemove(tag)}
-//                 className="ml-2 text-gray-500 hover:text-gray-700"
-//               ></button>
-//             </span>
-//           </div>
-//         </div>
-
-//         {/* Form Actions */}
-//         <div className="flex justify-end gap-4 pt-4 border-t">
-//           <button
-//             type="button"
-//             onClick={() => navigate(`/recipes/${formData.id}`)}
-//             className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-//             disabled={isSubmitting}
-//           >
-//             Cancel
-//           </button>
-//           <button
-//             type="submit"
-//             className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center"
-//             disabled={isSubmitting}
-//           >
-//             {isSubmitting ? (
-//               <>
-//                 <svg
-//                   className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-//                   xmlns="http://www.w3.org/2000/svg"
-//                   fill="none"
-//                   viewBox="0 0 24 24"
-//                 >
-//                   <circle
-//                     className="opacity-25"
-//                     cx="12"
-//                     cy="12"
-//                     r="10"
-//                     stroke="currentColor"
-//                     strokeWidth="4"
-//                   ></circle>
-//                   <path
-//                     className="opacity-75"
-//                     fill="currentColor"
-//                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-//                   ></path>
-//                 </svg>
-//                 Saving...
-//               </>
-//             ) : (
-//               "Save Changes"
-//             )}
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// }
 "use client";
 
 import { useState, useRef, ChangeEvent, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ModalContext from "../context/modalCondition";
-import axios from "axios";
 import RecipeContext from "../context/mockRecipes";
 
 interface RecipeFormData {
@@ -319,8 +22,12 @@ interface EditRecipeModalProps {
 }
 
 export default function EditRecipeModal({ recipe }: EditRecipeModalProps) {
-  const { toggleModal } = useContext(ModalContext);
+  const { toggleEditModal } = useContext(ModalContext);
   const { updateRecipe } = useContext(RecipeContext);
+  const [isIngredientError, setIsIngredientError] = useState(false);
+  const [isInstructionError, setIsInstructionError] = useState(false);
+  const [isTagError, setIsTagError] = useState(false);
+
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<RecipeFormData>({
@@ -418,7 +125,26 @@ export default function EditRecipeModal({ recipe }: EditRecipeModalProps) {
     e.preventDefault();
     setIsSubmitting(true);
 
+    setIsIngredientError(false);
+    setIsTagError(false);
+    setIsInstructionError(false);
     try {
+      if (formData.tags == "") {
+        setIsTagError(true);
+        return;
+      }
+      if (formData.ingredients) {
+        if (formData.ingredients.length == 1) {
+          setIsIngredientError(true);
+          return;
+        }
+      }
+      if (formData.instructions) {
+        if (formData.instructions.length == 1) {
+          setIsInstructionError(true);
+          return;
+        }
+      }
       const formDataToSend = new FormData();
       formDataToSend.append("id", formData._id || "");
       formDataToSend.append("title", formData.title);
@@ -447,7 +173,7 @@ export default function EditRecipeModal({ recipe }: EditRecipeModalProps) {
       // Use formDataToSend for the update
       updateRecipe(formDataToSend, recipe._id);
 
-      toggleModal();
+      toggleEditModal();
     } catch (error) {
       console.error("Error updating recipe:", error);
       alert("Failed to update recipe. Please try again.");
@@ -462,7 +188,7 @@ export default function EditRecipeModal({ recipe }: EditRecipeModalProps) {
         <div className="sticky bg-white top-0 p-4 border-b flex justify-between items-center">
           <h2 className="text-2xl font-bold">Edit Recipe</h2>
           <button
-            onClick={toggleModal}
+            onClick={toggleEditModal}
             className="text-gray-500 hover:text-gray-700"
             aria-label="Close modal"
           >
@@ -588,6 +314,11 @@ export default function EditRecipeModal({ recipe }: EditRecipeModalProps) {
                 placeholder="Add a tag (e.g., vegetarian)"
               />
             </div>
+            {isTagError && (
+              <small className=" text-red-600">
+                Tag is required <br />
+              </small>
+            )}
           </div>
 
           {/* Ingredients */}
@@ -658,6 +389,11 @@ export default function EditRecipeModal({ recipe }: EditRecipeModalProps) {
                 Add Ingredient
               </button>
             </div>
+            {isIngredientError && (
+              <small className=" text-red-800">
+                Your Ingredients must be atleast 2 ingredients
+              </small>
+            )}
           </div>
 
           {/* Instructions */}
@@ -734,13 +470,18 @@ export default function EditRecipeModal({ recipe }: EditRecipeModalProps) {
                 Add Step
               </button>
             </div>
+            {isInstructionError && (
+              <small className=" text-red-800">
+                Your Instructions must be atleast 2
+              </small>
+            )}
           </div>
 
           {/* Form Actions */}
           <div className="flex justify-end gap-4 pt-4 border-t">
             <button
               type="button"
-              onClick={toggleModal}
+              onClick={toggleEditModal}
               className="px-6 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
               disabled={isSubmitting}
             >

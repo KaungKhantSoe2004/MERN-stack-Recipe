@@ -1,5 +1,11 @@
 import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import HomePage from "./pages/home";
 import AboutPage from "./pages/about";
 import ContactPage from "./pages/contact";
@@ -25,9 +31,45 @@ function App() {
     coverImage?: string;
     servings?: number;
   }
-
+  interface links {
+    nextPage: boolean;
+    prevPage: boolean;
+    currentPage: number;
+    loopableLinks: { number: number }[];
+  }
   // ✅ Declare it only once
   const [mockRecipes, setMockRecipes] = useState<mockRecipesType[]>([]);
+  const [links, setLinks] = useState<links | null>({
+    nextPage: true,
+    prevPage: true,
+    currentPage: 2,
+    loopableLinks: [
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+      { number: 1 },
+      { number: 2 },
+      { number: 3 },
+    ],
+  });
 
   const addRecipe = async (
     newRecipe: mockRecipesType
@@ -40,9 +82,8 @@ function App() {
         withCredentials: true,
       }
     );
-    console.log("Added new Recipe", response);
+
     setMockRecipes((prev) => [...prev, response.data.data]);
-    console.log(mockRecipes);
   };
   const deleteRecipe = async (id: number): Promise<void> => {
     const response = await axios.delete(
@@ -62,9 +103,8 @@ function App() {
     id: number
     // token: string
   ): Promise<void> => {
-    // console.log(updatableRecipe, "is updatable Recipe");
     for (let [key, value] of updatableRecipe.entries()) {
-      console.log(`${key}:`, value);
+      console.log("dd");
     }
     const response = await axios.patch(
       `http://localhost:3000/blog/updateRecipe/${id}`,
@@ -73,14 +113,12 @@ function App() {
         withCredentials: true,
       }
     );
-    console.log(response.data);
   };
   const register = async (
     name: string,
     email: string,
     password: string
   ): Promise<void> => {
-    console.log(name, email, password);
     if (!name || !email || !password) {
       return;
     } else {
@@ -94,26 +132,30 @@ function App() {
           withCredentials: true,
         }
       );
-      console.log(response);
+
       return;
     }
   };
   const login = async (email: string, password: string): Promise<number> => {
-    if (!email || !password) {
-      return 422;
-    } else {
-      const response = await axios.post(
-        `http://localhost:3000/user/login`,
-        JSON.stringify({ email, password }),
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      console.log(response.status);
-      return response.status;
+    try {
+      if (!email || !password) {
+        return 422;
+      } else {
+        const response = await axios.post(
+          `http://localhost:3000/user/login`,
+          JSON.stringify({ email, password }),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+
+        return response.status;
+      }
+    } catch (e: any) {
+      return e.status;
     }
   };
   interface UserType {
@@ -129,15 +171,26 @@ function App() {
   };
 
   const [isOpen, setModalOpen] = useState<boolean>(false);
-
+  const [isEditModalOpen, setEditModalOpen] = useState<boolean>(false);
   const toggleModal = () => {
     setModalOpen(!isOpen);
   };
-  const fetchData = async (): Promise<void> => {
-    const response = await axios.get(`http://localhost:3000/blog/getRecipe`, {
-      withCredentials: true,
-    });
-    console.log(response.data.data);
+  const toggleEditModal = () => {
+    setEditModalOpen(!isEditModalOpen);
+  };
+  const fetchData = async (
+    pageNumber: number,
+    searchTerm: string | undefined
+  ): Promise<void> => {
+    console.log(searchTerm, "is searching term");
+    const response = await axios.get(
+      `http://localhost:3000/blog/getRecipe/?page=${pageNumber}&search=${searchTerm}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    setLinks(response.data.links);
     setMockRecipes(response.data.data);
   };
 
@@ -145,7 +198,9 @@ function App() {
   //   fetchData();
   // }, []);
   return (
-    <ModalContext.Provider value={{ isOpen, toggleModal }}>
+    <ModalContext.Provider
+      value={{ isOpen, toggleModal, isEditModalOpen, toggleEditModal }}
+    >
       <AuthContext.Provider value={{ register, login, User, logout }}>
         <RecipeContext.Provider
           value={{
@@ -154,6 +209,8 @@ function App() {
             deleteRecipe,
             updateRecipe,
             fetchData,
+            links,
+            setLinks,
           }}
         >
           <BrowserRouter>

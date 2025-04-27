@@ -8,14 +8,24 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
+  const [error, setError] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     // Add your login logic here
-    console.log({ email, password });
+
     const status = await login(email, password);
-    console.log(status);
+
     if (status == 200) {
       navigate("/");
+    } else if (status == 404) {
+      setError("No user exists");
+    } else if (status == 422) {
+      setError("email or password required");
+    } else if (status == 401) {
+      setError("Password is Incorrect");
+    } else {
+      setError("Please Try again");
     }
   };
   const checkAuth = async (): Promise<void> => {
@@ -52,6 +62,11 @@ const LoginPage = () => {
             </Link>
           </p>
         </div>
+        {error && (
+          <div className=" bg-red-200 rounded-xl p-3">
+            <h3 className="">{error}</h3>
+          </div>
+        )}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>

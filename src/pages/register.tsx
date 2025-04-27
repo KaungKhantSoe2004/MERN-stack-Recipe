@@ -20,6 +20,7 @@ interface FormErrors {
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+
   const { register } = useContext(AuthContext); // Assuming your auth context has a register function
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -84,7 +85,7 @@ const RegisterPage = () => {
       setErrors({
         general:
           error instanceof Error
-            ? error.message
+            ? error.response.data.message
             : "Registration failed. Please try again.",
       });
     } finally {

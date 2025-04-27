@@ -15,12 +15,12 @@ const NavHeader = () => {
     try {
       if (isAuthenticated) {
         // Perform logout logic
-        console.log("Logging out...");
+
         // navigate("/login"); // Redirect if needed
         const response = await axios.get("http://localhost:3000/user/logout", {
           withCredentials: true,
         });
-        console.log(response.data);
+
         navigate("/login");
       } else {
         navigate("/login"); // Redirect to login page
