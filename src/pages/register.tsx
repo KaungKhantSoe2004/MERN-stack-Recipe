@@ -21,7 +21,7 @@ interface FormErrors {
 const RegisterPage = () => {
   const navigate = useNavigate();
 
-  const { register } = useContext(AuthContext); // Assuming your auth context has a register function
+  const { register, SetUser } = useContext(AuthContext); // Assuming your auth context has a register function
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -98,6 +98,8 @@ const RegisterPage = () => {
         withCredentials: true,
       });
       if (response.status == 200) {
+        SetUser(response.data.data);
+
         navigate(-1);
       } else {
         return;

@@ -3,13 +3,14 @@ import NavHeader from "./nav";
 import axios from "axios";
 import { useContext, useEffect } from "react";
 import RecipeContext from "../context/mockRecipes";
+import AuthContext from "../context/users";
 
 const NavBar = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
   const searchTerm = searchParams.get("searchTerm") || "";
-
+  const { SetUser } = useContext(AuthContext);
   const { fetchData } = useContext(RecipeContext);
   const checkAuth = async (): Promise<void> => {
     try {
@@ -18,12 +19,15 @@ const NavBar = () => {
       });
 
       if (response.status == 200) {
+        console.log(response.data);
+        SetUser(response.data.data);
         return;
       } else {
         navigate(-1);
       }
     } catch (e) {
       navigate("/login");
+      console.log(e);
     }
   };
   useEffect(() => {

@@ -30,6 +30,7 @@ function App() {
     cookTime: string;
     coverImage?: string;
     servings?: number;
+    userId?: number;
   }
   interface links {
     nextPage: boolean;
@@ -78,6 +79,7 @@ function App() {
     const response = await axios.post(
       `http://localhost:3000/blog/addRecipe`,
       newRecipe,
+
       {
         withCredentials: true,
       }
@@ -164,7 +166,7 @@ function App() {
     password: string;
     favorites: string[];
   }
-  const { User, SetUser } = useState<UserType | undefined>(undefined);
+  const [User, SetUser] = useState<UserType | undefined>(undefined);
   const logout = () => {
     localStorage.removeItem("mockingJay");
     return "true";
@@ -201,7 +203,7 @@ function App() {
     <ModalContext.Provider
       value={{ isOpen, toggleModal, isEditModalOpen, toggleEditModal }}
     >
-      <AuthContext.Provider value={{ register, login, User, logout }}>
+      <AuthContext.Provider value={{ register, login, User, SetUser, logout }}>
         <RecipeContext.Provider
           value={{
             mockRecipes,

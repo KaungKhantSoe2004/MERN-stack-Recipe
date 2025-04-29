@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import ModalContext from "../context/modalCondition";
 import axios from "axios";
 import RecipeContext from "../context/mockRecipes";
+import AuthContext from "../context/users";
 
 interface RecipeFormData {
   title: string;
@@ -20,6 +21,8 @@ interface RecipeFormData {
 export default function AddRecipeModal() {
   const { toggleModal } = useContext(ModalContext);
   const { addRecipe } = useContext(RecipeContext);
+  const { User } = useContext(AuthContext);
+  console.log(User, "is user data");
   const [isIngredientError, setIsIngredientError] = useState(false);
   const [isInstructionError, setIsInstructionError] = useState(false);
   const [isTagError, setIsTagError] = useState(false);
@@ -148,6 +151,7 @@ export default function AddRecipeModal() {
       for (const [key, value] of formDataToSend.entries()) {
         console.log(key, value);
       }
+      formDataToSend.append("userId", User._id);
 
       addRecipe(formDataToSend);
 

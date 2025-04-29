@@ -7,7 +7,8 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext);
+  const { login, SetUser } = useContext(AuthContext);
+
   const [error, setError] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +35,8 @@ const LoginPage = () => {
         withCredentials: true,
       });
       if (response.status == 200) {
+        SetUser(response.data.data);
+
         navigate(-1);
       } else {
         return;
